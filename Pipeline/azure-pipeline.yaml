@@ -15,7 +15,8 @@ variables:
   autoscale: false
   deployWindows: false
   deployfrom: 'Deploy'
-  tagOverride: '1.0.32' # '' to build the images
+  # specify tag override as a pipeline parameter
+  #tagOverride: '1.0.32' # '' to build the images
   tag: $[coalesce(variables['tagOverride'], variables['build.buildnumber'])]
 
 stages:
@@ -118,6 +119,7 @@ stages:
               scriptPath: $(Build.SourcesDirectory)/Deploy/powershell/Generate-Config.ps1
               scriptArguments:
                 -resourceGroup $(resourceGroup) `
+                -appInsightsName "tt-app-insights"
                 -outputFile ../helm/__values/values.yml
               azurePowerShellVersion: latestVersion
               workingDirectory: $(Build.SourcesDirectory)/Deploy/powershell

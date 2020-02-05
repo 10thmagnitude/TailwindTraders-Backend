@@ -6,14 +6,13 @@ Param (
     [parameter(Mandatory=$false)][string]$rewardsResourceGroup="",
     [parameter(Mandatory=$false)][string]$rewardsDbPassword="",
     [parameter(Mandatory=$false)][string[]]$gvaluesTemplate="..,helm,gvalues.template",
-    [parameter(Mandatory=$false)][string]$ingressClass="addon-http-application-routing"
+    [parameter(Mandatory=$false)][string]$ingressClass="addon-http-application-routing",
+    [parameter(Mandatory=$false)][string]$appInsightsName
 )
 
 try {
     az extension add --name application-insights 2> $null
     az extension list
-    az monitor app-insights component show
-    Write-Host "All good here"
 } catch {
     # ignore
 }
@@ -92,14 +91,17 @@ $tokens.rewardsregistration=If ($rewardsResourceGroup) { $true } Else { $false }
 $appinsightsId=""
 
 ## Getting App Insights instrumentation key, if required
-$appInsightsName=$(az resource list -g $resourceGroup --resource-type Microsoft.Insights/components --query [].name | ConvertFrom-Json)
-if ($appInsightsName -and $appInsightsName.Length -eq 1) {
-    $appinsightsConfig=$(az monitor app-insights component show --app $appInsightsName[0] -g $resourceGroup -o json | ConvertFrom-Json)
+if (!$appInsightsName) {
+    $appInsightsResource=$(az resource list -g $resourceGroup --resource-type Microsoft.Insights/components --query [].name | ConvertFrom-Json)
+    Write-Host "No app insights name - looking up resource"
+    $appInsightsName = $appInsightsResource[0]
+}
+Write-Host "Using app insights name $($appInsightsName)"
 
-    if ($appinsightsConfig) {
-        $appinsightsId = $appinsightsConfig.instrumentationKey
-        Write-Host "App Insights Instrumentation Key: $($appinsightsId)" -ForegroundColor Yellow    
-    }
+$appinsightsConfig=$(az monitor app-insights component show --app $appInsightsName -g $resourceGroup -o json | ConvertFrom-Json)
+
+if ($appinsightsConfig) {
+    $appinsightsId = $appinsightsConfig.instrumentationKey
 }
 
 Write-Host "App Insights Instrumentation Key: $($appinsightsId)" -ForegroundColor Yellow
@@ -117,6 +119,7 @@ if($ingressClass -ne "addon-http-application-routing") {
     $tokens.ingressrewritetarget="`$2"
 }
 
+Write-Host "Token:"
 Write-Host ($tokens | ConvertTo-Json) -ForegroundColor Yellow
 Write-Host "===========================================================" -ForegroundColor Yellow
 

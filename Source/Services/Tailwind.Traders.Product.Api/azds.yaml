@@ -1,7 +1,7 @@
 kind: helm-release
 apiVersion: 1.1
 build:
-  context: ..\..\
+  context: ../../
   dockerfile: Dockerfile
 install:
   chart: ../../../Deploy/helm/products-api
@@ -17,7 +17,7 @@ install:
       # This expands to [space.s.]identity.<guid>.<region>.aksapp.io
       - $(spacePrefix)$(rootSpacePrefix)tt$(hostSuffix)
   values:
-  - ../../../Deploy/helm/gvalues.azds.yaml  
+  - ../../../Deploy/helm/__values/gvalues.azds.yaml  
   - values.dev.yaml?
   - secrets.dev.yaml?
 configurations:
