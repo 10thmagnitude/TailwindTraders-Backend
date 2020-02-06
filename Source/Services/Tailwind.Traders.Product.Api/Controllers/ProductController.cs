@@ -88,32 +88,25 @@ namespace Tailwind.Traders.Product.Api.Controllers
         [ProducesResponseType(204)]
         public async Task<IActionResult> FindProductAsync([FromQuery] int[] brand, [FromQuery] int[] type)
         {
-            try{
-                var items = (await _productContext.ProductItems.ToListAsync())
-                    .Where(item => brand.Contains(item.BrandId) || type.Contains(item.TypeId) || item.Name.Contains("gnome"));
+            var items = (await _productContext.ProductItems.ToListAsync())
+                .Where(item => brand.Contains(item.BrandId) || type.Contains(item.TypeId) || item.Name.Contains("gnome"));
 
-                items
-                    .OrderByDescending(inc => inc.Name.Contains("gnome"))
-                    .Join(
-                    _productContext.ProductBrands,
-                    _productContext.ProductTypes,
-                    _productContext.ProductFeatures,
-                    _productContext.Tags);
+            items
+                .OrderByDescending(inc => inc.Name.Contains("gnome"))
+                .Join(
+                _productContext.ProductBrands,
+                _productContext.ProductTypes,
+                _productContext.ProductFeatures,
+                _productContext.Tags);
 
-                if (!items.Any())
-                {
-                    _logger.LogDebug("Not Products for this criteria");
-
-                    return NoContent();
-                }
-
-                return Ok(_mapperDtos.MapperToProductDto(items));
-            }
-            catch(Exception ex)
+            if (!items.Any())
             {
-                Console.WriteLine(ex.Message);
-                throw;
+                _logger.LogDebug("Not Products for this criteria");
+
+                return NoContent();
             }
+
+            return Ok(_mapperDtos.MapperToProductDto(items));
         }
 
         [HttpGet("tag/{tag}")]
