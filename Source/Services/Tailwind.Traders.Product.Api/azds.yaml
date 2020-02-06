@@ -39,6 +39,8 @@ configurations:
       - --no-restore
       - --no-build
       - --no-launch-profile
+      - --urls
+      - http://+:80 
       - -c
       - ${BUILD_CONFIGURATION:-Debug}
       iterate:
