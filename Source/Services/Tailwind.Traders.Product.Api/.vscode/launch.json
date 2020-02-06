@@ -1,0 +1,31 @@
+{
+    "configurations": [
+        {
+            "name": ".NET Core Launch (AZDS)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "azds: prelaunch",
+            "pipeTransport": {
+                "pipeCwd": "${workspaceFolder}",
+                "pipeProgram": "azds",
+                "pipeArgs": [
+                    "exec",
+                    "--interactive",
+                    "--on-exit-resume-up",
+                    "--"
+                ],
+                "debuggerPath": "/vsdbg/vsdbg",
+                "quoteArgs": false
+            },
+            "cwd": "/src/Services/Tailwind.Traders.Product.Api/bin/Debug/netcoreapp3.0",
+            "program": "Tailwind.Traders.Product.Api.dll",
+            "args": [
+                "--urls",
+                "http://+:80",
+            ],
+            "sourceFileMap": {
+                "/src": "${workspaceFolder}/../../"
+            }
+        }
+    ]
+}
