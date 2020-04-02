@@ -1,3 +1,5 @@
+const appInsights = require("applicationinsights");
+
 class CartController {
     constructor(shoppingCartDao, recommendedDao) {
         this.shoppingCartDao = shoppingCartDao;
@@ -10,6 +12,18 @@ class CartController {
 
     async addProduct(req, res) {
         const item = req.body;
+        try {
+            let client = appInsights.defaultClient;
+            let detail = item.detailProduct;
+            client.trackEvent({name: "shoppingCart/add", properties: { 
+                productId: detail.id,
+                productName: detail.name,
+                productPrice: detail.price,
+                procuctTypeId: detail.typeid
+            }});
+        } catch (error) {
+            // swallow
+        }
         const doc = await this.shoppingCartDao.addItem(item);
         res.status(201).send({ message: "Product added on shopping cart", id: doc.id });
     }
