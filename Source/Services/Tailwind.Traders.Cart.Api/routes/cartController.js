@@ -19,7 +19,7 @@ class CartController {
                 productId: detail.id,
                 productName: detail.name,
                 productPrice: detail.price,
-                procuctTypeId: detail.typeid
+                productTypeId: detail.typeid
             }});
         } catch (error) {
             // swallow
