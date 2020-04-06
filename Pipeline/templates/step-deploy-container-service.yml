@@ -10,7 +10,7 @@ parameters:
   services: []
 
 steps:
-hack because KubernetesManifest breaks when helm3 is used: https://github.com/microsoft/azure-pipelines-tasks/issues/12511
+# hack because KubernetesManifest breaks when helm3 is used: https://github.com/microsoft/azure-pipelines-tasks/issues/12511
 - task: HelmInstaller@1
   displayName: Install helm2 (for baking)
   inputs:
