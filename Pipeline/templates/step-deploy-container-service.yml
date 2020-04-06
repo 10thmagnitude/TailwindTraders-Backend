@@ -10,11 +10,11 @@ parameters:
   services: []
 
 steps:
-# hack because KubernetesManifest breaks when helm3 is used: https://github.com/microsoft/azure-pipelines-tasks/issues/12511
-# - task: HelmInstaller@1
-#   displayName: Install helm2 (for baking)
-#   inputs:
-#     helmVersionToInstall: '2.16.3'
+hack because KubernetesManifest breaks when helm3 is used: https://github.com/microsoft/azure-pipelines-tasks/issues/12511
+- task: HelmInstaller@1
+  displayName: Install helm2 (for baking)
+  inputs:
+    helmVersionToInstall: '2.16.3'
 
 - ${{ each s in parameters.services }}:
   - ${{ if eq(s.skip, 'false') }}:
@@ -23,7 +23,7 @@ steps:
       name: bake_${{ s.serviceShortName }}
       inputs:
         action: bake
-        renderType: helm
+        renderType: helm2
         releaseName: ${{ s.serviceName }}-${{ parameters.environment }}
         helmChart: $(Build.SourcesDirectory)/Deploy/helm/${{ s.serviceName }}
         overrideFiles: $(Build.SourcesDirectory)/Deploy/helm/__values/values.yml
