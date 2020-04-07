@@ -53,7 +53,7 @@ stages:
       TailWindAKS-Dev.dev
     strategy:
       canary:
-        increments: [10, 10]
+        increments: [10, 20]
         preDeploy:
           steps:
           - task: AzureCLI@2
