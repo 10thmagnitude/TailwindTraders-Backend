@@ -72,6 +72,18 @@ stages:
                 aksName=$(az aks list -g $(resourceGroup) --query [0].name -o tsv)
                 hname=$(az aks show -n $aksName -g $(resourceGroup) --query addonProfiles.httpApplicationRouting.config.HTTPApplicationRoutingZoneName -o tsv)
                 echo "##vso[task.setvariable variable=IngressHost;]$hname"
+          - task: AzureCLI@2
+            displayName: Generate config for environment
+            inputs:
+              azureSubscription: $(subscription)
+              scriptType: pscore
+              scriptPath: $(Build.SourcesDirectory)/Deploy/powershell/Generate-Config.ps1
+              scriptArguments:
+                -resourceGroup $(resourceGroup) `
+                -appInsightsName "tt-app-insights"
+                -outputFile ../helm/__values/values.yml
+              azurePowerShellVersion: latestVersion
+              workingDirectory: $(Build.SourcesDirectory)/Deploy/powershell
           - task: KubernetesManifest@0
             displayName: Bake manifest
             name: bake
