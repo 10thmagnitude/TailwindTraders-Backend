@@ -1,9 +1,9 @@
 name: 0.99$(Rev:.r)
 
 trigger:
-  branches:
-    include:
-    - master
+  # branches:
+  #   include:
+  #   - master
   paths:
     include:
     - Source/Services/Tailwind.Traders.Cart.Api
