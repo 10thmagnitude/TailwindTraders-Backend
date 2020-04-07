@@ -53,8 +53,7 @@ stages:
     environment:
       TailWindAKS-Dev.dev
     strategy:
-      canary:
-        increments: [10, 20]
+      runOnce:
         deploy:
           steps:
           - checkout: self
@@ -101,11 +100,12 @@ stages:
                 hpa.activated:false
                 ingress.tls[0].secretName:tt-letsencrypt-staging
                 ingress.tls[0].hosts:{'$(IngressHost)'}
+                replicaCount: 2
           - task: KubernetesManifest@0
             inputs:
               action: deploy
               trafficSplitMethod: pod
-              strategy: $(strategy.name)
-              percentage: $(strategy.increment)
+              strategy: canary
+              percentage: 50
               manifests: $(bake.manifestsBundle)
               imagePullSecrets: $(imagePullSecret)
