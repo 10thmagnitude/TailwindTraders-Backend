@@ -56,6 +56,8 @@ stages:
         increments: [10, 20]
         deploy:
           steps:
+          - checkout: self
+          - download: none
           - task: HelmInstaller@1
             displayName: Install helm2 (for baking)
             inputs:
