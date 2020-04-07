@@ -103,7 +103,7 @@ stages:
           - task: KubernetesManifest@0
             inputs:
               action: deploy
-              trafficSplitMethod: smi
+              trafficSplitMethod: pod
               strategy: $(strategy.name)
               percentage: $(strategy.increment)
               manifests: $(bake.manifestsBundle)
