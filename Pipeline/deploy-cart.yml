@@ -7,6 +7,7 @@ trigger:
   paths:
     include:
     - Source/Services/Tailwind.Traders.Cart.Api
+    - Pipeline/deploy-cart.yml
 
 resources:
 - repo: self
