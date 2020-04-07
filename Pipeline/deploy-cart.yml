@@ -37,7 +37,7 @@ stages:
         repository: cart.api
         command: buildAndPush
         buildContext: Source/Services/Tailwind.Traders.Cart.Api
-        Dockerfile: Dockerfile
+        Dockerfile: Source/Services/Tailwind.Traders.Cart.Api/Dockerfile
         tags: |
           $(Build.BuildNumber)
 
