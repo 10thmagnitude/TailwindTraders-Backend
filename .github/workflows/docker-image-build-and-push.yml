@@ -1,0 +1,96 @@
+name: Build and Push Docker Images
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+
+env:
+  registry: lpm10meus2acr.azurecr.io
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Get Short SHA
+      id: slug
+      # Need to do this since using docker-compose and need to set an ENVIRONMENT variable for tag
+      run: echo "::set-output name=sha8::$(echo ${GITHUB_SHA} | cut -c1-8)"
+
+    - name: Build Images with SHA Tag
+      working-directory: ./Source
+      run: |
+        # Build Images
+        # Yellow Output
+        echo -e "\033[0;33m---------------------------------------------------\033[0m"
+        echo -e "\033[0;33mUsing docker compose to build images.\033[0m"
+        echo -e "\033[0;33mImages will be named as <acrLoginServer>/<imageName>:<tag>\033[0m"
+        echo -e "\033[0;33m---------------------------------------------------\033[0m"
+
+        docker-compose -f docker-compose.yml build
+      env:
+          # Since using docker-compose and not docker need to set ENVIRONMENT variables for TAG and REGISTRY
+          TAG: ${{ steps.slug.outputs.sha8 }}
+          REGISTRY: ${{env.registry}}
+
+    - name: Build Images with Latest Tag
+      working-directory: ./Source
+      run: |
+        # Build Images
+        # Yellow Output
+        echo -e "\033[0;33m---------------------------------------------------\033[0m"
+        echo -e "\033[0;33mUsing docker compose to build images.\033[0m"
+        echo -e "\033[0;33mImages will be named as <acrLoginServer>/<imageName>:<tag>\033[0m"
+        echo -e "\033[0;33m---------------------------------------------------\033[0m"
+
+        docker-compose -f docker-compose.yml build
+      env:
+          # Since using docker-compose and not docker need to set ENVIRONMENT variables for TAG and REGISTRY
+          TAG: latest
+          REGISTRY: ${{env.registry}}
+
+    - name: ACR Login
+      uses: azure/docker-login@v1
+      with:
+        login-server: ${{env.registry}}
+        username: ${{ secrets.REGISTRY_USERNAME }}
+        password: ${{ secrets.REGISTRY_PASSWORD }}
+    
+    - name: Push Images with SHA Tag
+      run: |
+        # Push Images with SHA
+        # Yellow Output
+        echo -e "\033[0;33m---------------------------------------------------\033[0m"
+        echo -e "\033[0;33mUsing docker compose to push images.\033[0m"
+        echo -e "\033[0;33m---------------------------------------------------\033[0m"
+        docker-compose -f docker-compose.yml push
+      working-directory: ./Source
+      env:
+          # Since using docker-compose and not docker need to set ENVIRONMENT variables for TAG and REGISTRY
+          TAG: ${{ steps.slug.outputs.sha8 }}
+          REGISTRY: ${{env.registry}}
+
+    - name: Push Images with Latest Tag
+      run: |
+        # Push Images with latest
+        # Yellow Output
+        echo -e "\033[0;33m---------------------------------------------------\033[0m"
+        echo -e "\033[0;33mUsing docker compose to push images.\033[0m"
+        echo -e "\033[0;33m---------------------------------------------------\033[0m"
+        docker-compose -f docker-compose.yml push
+      working-directory: ./Source
+      env:
+          # Since using docker-compose and not docker need to set ENVIRONMENT variables for TAG and REGISTRY
+          TAG: latest
+          REGISTRY: ${{env.registry}}
+
+
+
+
